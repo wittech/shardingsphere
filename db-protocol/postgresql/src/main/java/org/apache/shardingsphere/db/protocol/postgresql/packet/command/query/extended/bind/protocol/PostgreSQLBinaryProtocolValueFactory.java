@@ -35,6 +35,8 @@ public final class PostgreSQLBinaryProtocolValueFactory {
     private static final Map<BinaryColumnType, PostgreSQLBinaryProtocolValue> BINARY_PROTOCOL_VALUES = new HashMap<>();
     
     static {
+        setBitBinaryProtocolValue();
+        setTimeStampBinaryProtocolValue();
         setUnspecifiedBinaryProtocolValue();
         setStringLenencBinaryProtocolValue();
         setInt8BinaryProtocolValue();
@@ -54,6 +56,17 @@ public final class PostgreSQLBinaryProtocolValueFactory {
         setStringArrayBinaryProtocolValue();
         setByteaBinaryProtocolValue();
         setUUIDBinaryProtocolValue();
+    }
+
+    private static void setTimeStampBinaryProtocolValue() {
+        PostgreSQLTimeStampBinaryProtocolValue timeStampbinaryProtocolValue = new PostgreSQLTimeStampBinaryProtocolValue();
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.TIMESTAMP, timeStampbinaryProtocolValue);
+    }
+
+    private static void setBitBinaryProtocolValue() {
+        PostgreSQLBoolBinaryProtocolValue binaryProtocolValue = new PostgreSQLBoolBinaryProtocolValue();
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.BIT, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.BOOL, binaryProtocolValue);
     }
     
     private static void setUnspecifiedBinaryProtocolValue() {

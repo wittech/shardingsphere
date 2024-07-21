@@ -33,6 +33,8 @@ import java.util.Collection;
 
 /**
  * Data row packet for PostgreSQL.
+ * 协议结构
+ * https://www.postgresql.org/docs/current/protocol-message-formats.html
  */
 @RequiredArgsConstructor
 @Getter

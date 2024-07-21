@@ -195,6 +195,9 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BOOLEAN, BOOL);
         // TODO Temporary solution for https://github.com/apache/shardingsphere/issues/22522
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.STRUCT, VARCHAR);
+        // TODO 修复bool类型字段在rust驱动下面返回的RowDescription的协议里面错误的返回为bit了，而不是bool导致解析错误；
+        // PostgreSQLRowDescriptionPacket里面在组装协议，RowDescription；https://www.postgresql.org/docs/current/protocol-message-formats.html
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(-7, BOOL);
     }
     
     /**

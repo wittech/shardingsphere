@@ -21,59 +21,69 @@
 # This example is configuration of sharding rule.
 #
 ######################################################################################################
-#
-#databaseName: sharding_db
-#
-#dataSources:
-#  ds_0:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_0
-#    username: postgres
-#    password: postgres
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
-#    minPoolSize: 1
-#  ds_1:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_1
-#    username: postgres
-#    password: postgres
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
-#    minPoolSize: 1
-#
-#rules:
-#- !SHARDING
+# docker run --name postgres1 -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:11.22-alpine
+# docker run --name postgres2 -e POSTGRES_PASSWORD=postgres -p 5433:5432 -d postgres:11.22-alpine
+databaseName: demo_ds
+
+dataSources:
+ ds_0:
+   url: jdbc:postgresql://127.0.0.1:5432/demo_ds
+   username: postgres
+   password: postgres
+   connectionTimeoutMilliseconds: 30000
+   idleTimeoutMilliseconds: 60000
+   maxLifetimeMilliseconds: 1800000
+   maxPoolSize: 50
+   minPoolSize: 1
+ ds_1:
+   url: jdbc:postgresql://127.0.0.1:5433/demo_ds
+   username: postgres
+   password: postgres
+   connectionTimeoutMilliseconds: 30000
+   idleTimeoutMilliseconds: 60000
+   maxLifetimeMilliseconds: 1800000
+   maxPoolSize: 50
+   minPoolSize: 1
+
+rules:
+- !SHARDING
+  tables:
+    user:
+      actualDataNodes: ds_0.user
+      databaseStrategy: # 分库规则  
+        standard: # 标准类型分片，目前官方有四种分片类型  
+          shardingColumn: id
+          shardingAlgorithmName: database_mem_mod # 算法名称
+
+  shardingAlgorithms:
+    database_mem_mod:
+      type: CLASS_BASED 
+      props:
+        strategy: STANDARD #设置属性
+        algorithmClassName: org.apache.shardingsphere.proxy.DbShardingAlgorithm  #引用分库Java类
+
+# rules:
+# - !SHARDING
 #  tables:
-#    t_order:
-#      actualDataNodes: ds_${0..1}.t_order_${0..1}
+#    user:
+#      actualDataNodes: ds_${0..1}.user
 #      tableStrategy:
 #        standard:
-#          shardingColumn: order_id
-#          shardingAlgorithmName: t_order_inline
+#          shardingColumn: id
+#          shardingAlgorithmName: user_inline
 #      keyGenerateStrategy:
-#        column: order_id
+#        column: id
 #        keyGeneratorName: snowflake
 #      auditStrategy:
 #        auditorNames:
 #          - sharding_key_required_auditor
 #        allowHintDisable: true
-#    t_order_item:
-#      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-#      tableStrategy:
-#        standard:
-#          shardingColumn: order_id
-#          shardingAlgorithmName: t_order_item_inline
-#      keyGenerateStrategy:
-#        column: order_item_id
-#        keyGeneratorName: snowflake
 #  bindingTables:
-#    - t_order,t_order_item
+#    - user
+#  # 数据库的分库规则
 #  defaultDatabaseStrategy:
 #    standard:
-#      shardingColumn: user_id
+#      shardingColumn: id
 #      shardingAlgorithmName: database_inline
 #  defaultTableStrategy:
 #    none:
@@ -81,30 +91,26 @@
 #    auditorNames:
 #      - sharding_key_required_auditor
 #    allowHintDisable: true
-#
+
 #  shardingAlgorithms:
 #    database_inline:
 #      type: INLINE
 #      props:
-#        algorithm-expression: ds_${user_id % 2}
-#    t_order_inline:
+#        algorithm-expression: ds_${id % 2}
+#    user_inline:
 #      type: INLINE
 #      props:
-#        algorithm-expression: t_order_${order_id % 2}
-#    t_order_item_inline:
-#      type: INLINE
-#      props:
-#        algorithm-expression: t_order_item_${order_id % 2}
-#
+#        algorithm-expression: user_${id % 2}
+
 #  keyGenerators:
 #    snowflake:
 #      type: SNOWFLAKE
-#
+
 #  auditors:
 #    sharding_key_required_auditor:
 #      type: DML_SHARDING_CONDITIONS
-#
-#- !BROADCAST
+
+# - !BROADCAST
 #  tables:
 #    - t_address
 
